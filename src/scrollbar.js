@@ -2,53 +2,45 @@ class Scrollbar{
     #content;
     #container;
     #scrollbar;
-    #width;
-    #height;
-
-    static getIndexOf(element) {
-        return Array.prototype.indexOf.call(element.parentElement.children, element);
-    }
+    #scrollbarThumb;
 
     constructor(scrollable) {
-        this.#content = document.querySelector(scrollable);
-        this.#width = this.#content.clientWidth;
-        this.#height = this.#content.clientHeight;
-    }
-
-    createContainer() {
-        if(this.#content.nodeName == "BODY"){
-            this.#container = document.querySelector("html");
-            return;
-        }
-        this.#container = document.createElement("div");
-        const parent = this.#content.parentNode;
-        const i = getIndexOf(this.#content);
-        parent.insertBefore(this.#container, parent.children[i]);
-        this.#container.appendChild(this.#content);
-    }
-
-    createScrollbar(){
-        this.#scrollbar = document.createElement("nav");
-        this.#container.appendChild(this.#scrollbar);
+        this.#container = document.querySelector(scrollable);
     }
 
     initialize() {
-        this.createContainer();
-        this.createScrollbar();
+        this.#content = document.createElement("div");
+        if(this.#container.hasChildNodes()){
+            this.#content.innerHTML = this.#container.getInnerHTML();
+            
+            const children = this.#container.childNodes;
+            let i = 0;
+            children.forEach(child => {
+                if(child.nodeName == "SCRIPT")
+                    console.log(1)
+                else
+                    this.#container.removeChild(this.#container.firstChild);
+            });
+        }
+        this.#container.insertBefore(this.#content, this.#container.children[0]);
 
+        this.#scrollbar = document.createElement("nav");
+        this.#scrollbarThumb = document.createElement("div");
+        this.#scrollbar.appendChild(this.#scrollbarThumb);
+        this.#container.insertBefore(this.#scrollbar, this.#container.children[1]);
+        
         this.#container.classList.add("scrollable");
         this.#content.classList.add("scrollable__content");
         this.#scrollbar.classList.add("scrollable__scrollbar");
-
-        this.#container.style.width = this.#width + "px";
-        this.#container.style.height = this.#height + "px";
+        this.#scrollbarThumb.classList.add("scrollbar-thumb");
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    
-});
+    const scrollbar = new Scrollbar("body");
+    scrollbar.initialize();
 
-const bodyScrollbar = new Scrollbar("body");
-bodyScrollbar.initialize();
+    const body = document.querySelector("body");
+    console.log(body);
+});
 
